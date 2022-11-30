@@ -1,5 +1,5 @@
 ---
-title: "PM566 Final Project"
+title: "Association between Age Groups and COVID-19 Deaths Proportion of Total Deaths"
 author: "Xuan Huang"
 output: 
     html_document:
