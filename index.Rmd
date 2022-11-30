@@ -166,7 +166,7 @@ layout(title = "COVID-19 Death Proportion by gender",
          hovermode = "compare")
 ```
 
-From this line chart, for both female and male, the proportion of COVID-19 deaths grow slowly before 15 years old. From 15 to 54, the proportion increase rapidly. From 54 to 84, the proportion reach the peck. And after 84 years old, the proportion of COVID-19 deaths go down.
+From this line chart, for both female and male, the proportion of COVID-19 deaths grow slowly before 15 years old. From 15 to 54, the proportion increase rapidly. From 54 to 84, the proportion reach the peak. And after 84 years old, the proportion of COVID-19 deaths go down.
 
 For female, the growth of proportion of COVID-19 deaths is faster in teenagers. And the decrease of proportion of COVID-19 deaths start earlier than male.
 
@@ -239,9 +239,9 @@ fig <- fig %>% layout(
 fig
 ```
 
-In this choropleth map, dark blue means the state has a relative high COVID-19 death proportion. We can see the COVID-19 death proportion have significant differences in states. 
+In this choropleth map, dark blue means the state has a relatively high COVID-19 death proportion. We can see the COVID-19 death proportion have significant differences in states. 
 
-##  Spaghetti plots of COVID-19  Proportion Deaths versus Age Groups
+##  Spaghetti plots of COVID-19 Deaths Proportion versus Age Groups
 
 ```{r spaghetti, message=F, echo=F, warning=FALSE}
 g1 = dat1[Sex == "Male"] %>%
