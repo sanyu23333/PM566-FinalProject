@@ -8,3 +8,295 @@ output:
 ---
 
 This is my PM566 Final Project website.
+
+<br>
+
+```{r setup, message=F, echo=F, warning=FALSE}
+library(DT)
+library(plotly)
+library(dplyr)
+library(data.table)
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+# Initialize code chunk options
+opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  eval=TRUE,
+  echo = TRUE,
+  cache = FALSE,
+  fig.width = 7, 
+  fig.align = 'center',
+  fig.asp = 0.618,
+  out.width = "700px",
+  class.source = "code-r")
+```
+
+```{css, echo = FALSE}
+.code-r { /* Code block */
+  font-size: 15px;
+}
+
+.code-r-small { /* Code block */
+  font-size: 10px;
+}
+```
+
+
+
+```{r message=F, echo=F, warning=FALSE, cache=TRUE}
+# ### read data
+dat1 <- "death_by_sex_age.csv"
+if (!file.exists(dat1))
+  download.file("https://data.cdc.gov/api/views/9bhg-hcku/rows.csv?accessType=DOWNLOAD", destfile = dat1)
+
+death_by_sex_age <- data.table::fread("death_by_sex_age.csv")
+# summary(death_by_sex_age)
+```
+
+
+
+
+
+```{r clean_data2, message=F, echo=F, warning=FALSE}
+## clean raw dataset
+## Raw dataset contains the COVID-19 deaths data in different period from 01/01/2020 to 10/15/2022. Here, we used the data from 01/01/2020 to 10/15/2022. This period contains the most deaths data.
+dat1 <- death_by_sex_age[`Start Date` == "01/01/2020"& `End Date` == "11/19/2022"]
+# str(dat1)
+## **In the following process, we will stratify the COVID-19 deaths rates by sex and state. **
+
+dat1 <- dat1[Sex != "All Sexes" & `Age Group` != "All Ages" & State != "United States"]
+#unique(dat1$`Age Group`)
+dat1 <- dat1[`Age Group` != "0-17 years" & `Age Group` != "18-29 years" & `Age Group` !="30-39 years" & `Age Group` != "40-49 years" & `Age Group` != "50-64 years"]
+
+# Age group is a ordinal categorical variable. The different age group have a clear order. So we use "order" function to tranform age group variable to ordered factor.
+dat1 <- dat1[, `Age Group` := ordered(`Age Group`, levels = c(
+    "Under 1 year","1-4 years"  ,    "5-14 years",     
+ "15-24 years"  ,    "25-34 years"   ,    "35-44 years"    ,  
+ "45-54 years"  ,    "55-64 years"    ,   "65-74 years"    ,  
+"75-84 years"   ,    "85 years and over"
+))]
+# We also need to calculate the COVID-19 deaths proportion of total death.
+dat1[, "COVID-19 deaths proportion" := `COVID-19 Deaths`/`Total Deaths`]
+```
+
+```{r clean_data, message=F, echo=F, warning=FALSE}
+# Calculate means of COVID-19 death proportion in different age groups
+dat2 <- death_by_sex_age[`Start Date` == "01/01/2020" & `End Date` == "11/19/2022" & State == "United States" & Sex == "All Sexes" & `Age Group` != "All Ages"]
+dat2[, "COVID-19 Death Proportion" := `COVID-19 Deaths`/`Total Deaths`]
+
+dat2 <- dat2[`Age Group` != "0-17 years" & `Age Group` != "18-29 years" & `Age Group` !="30-39 years" & `Age Group` != "40-49 years" & `Age Group` != "50-64 years"]
+
+dat2 <- dat2[, `Age Group` := ordered(`Age Group`, levels = c(
+    "Under 1 year","1-4 years"  ,    "5-14 years",     
+ "15-24 years"  ,    "25-34 years"   ,    "35-44 years"    ,  
+ "45-54 years"  ,    "55-64 years"    ,   "65-74 years"    ,  
+"75-84 years"   ,    "85 years and over"
+))]
+
+
+```
+
+
+
+
+
+# Introduction
+
+Older people have higher rates of comorbidities and may experience more inflammatory responses. Therefore,the COVID-19 deaths proportion of total deaths for the elderly will be higher than the younger. Herein, we aimed to explore the association between age and the deaths involving COVID-19.
+
+# Methods
+
+The raw dataset we used is from nation center for health statistics.
+Beside age and proportion of deaths involving COVID-19, we also include sex and state variables in our dataset. Because deaths involving COVID-19 may be sex-specific, and the vaccination satus may vary from different states. 
+
+Including sex and state variables can help us stratify the COVID-19 death proportion in different age groups.
+
+COVID-19 deaths proportion: COVID-19 Deaths/Total Deaths
+
+Age Group: Under 1 year, 1-4 years, 5-14 years, 15-24 years, 25-34 years, 35-44 years, 45-54 years, 55-64 years, 65-74 years, 75-84 years, 85 years and over
+
+Sex: Female, Male
+
+State: US states
+
+
+# Main Question
+
+**What is the association between age groups and COVID-19 deaths proportion of total deaths?**
+
+
+# Data Wrangling
+
+We used the data from 01/01/2020 to 11/19/2022. When we check the value of Age groups variable, we find some of age groups are overlapped. So we need to remove some of age group. Also, we calculate the COVID-19 deaths proportion of total deaths.
+
+# Preliminary Results
+
+## Table of average proportion of COVID-19 Death and Age group
+
+```{r message=F, echo=F, warning=FALSE}
+overall_age_cov <- dat2[, .(`Age Group`, `COVID-19 Death Proportion`)]
+overall_age_cov$`COVID-19 Death Proportion` <- round(overall_age_cov$`COVID-19 Death Proportion`, digits = 4)
+datatable(overall_age_cov)
+```
+
+Basically, there is a trend of age groups and COVID-19 deaths proportion. With the increase of age, the probability of dying from COVID-19 get higher. But after 75 years old, this probability goes down.
+
+## Lineplot of COVID-19 Death Proportion by gender
+
+```{r Lineplot, message=F, echo=F, warning=FALSE}
+dat3 <- death_by_sex_age[`Start Date` == "01/01/2020" & `End Date` == "11/19/2022" & State == "United States" & Sex != "All Sexes" & `Age Group` != "All Ages" & `Age Group` != "0-17 years" & `Age Group` != "18-29 years" & `Age Group` !="30-39 years" & `Age Group` != "40-49 years" & `Age Group` != "50-64 years"]
+dat3[, "COVID-19 Death Proportion" := `COVID-19 Deaths`/`Total Deaths`]
+
+dat3$`Age Group` <- factor(dat3$`Age Group`, levels = c("Under 1 year", "1-4 years", "5-14 years", "15-24 years","25-34 years", "35-44 years" , "45-54 years"  ,     "55-64 years"   ,    "65-74 years" , "75-84 years"   ,    "85 years and over"), ordered = T)
+dat3 %>%
+  plot_ly(y = ~`COVID-19 Death Proportion`, x = ~ `Age Group`,
+         type = 'scatter',
+         mode = 'line',
+         color = ~`Sex`,
+         hoverinfo = 'text',
+         text = ~paste( paste(Sex, ":", sep=""), 
+              paste(" Age Group: ", `Age Group`, sep="") ,
+              paste(" COVID-19 Death Proportion: ", round(`COVID-19 Death Proportion`, digits = 4), sep=""),
+              sep = "<br>")) %>% 
+layout(title = "COVID-19 Death Proportion by gender",
+        yaxis = list(title = "COVID-19 Death Proportion"), 
+         xaxis = list(title = "age group"),
+         hovermode = "compare")
+```
+
+From this line chart, for both female and male, the proportion of COVID-19 deaths grow slowly before 15 years old. From 15 to 54, the proportion increase rapidly. From 54 to 84, the proportion reach the peck. And after 84 years old, the proportion of COVID-19 deaths go down.
+
+For female, the growth of proportion of COVID-19 deaths is faster in teenagers. And the decrease of proportion of COVID-19 deaths start earlier than male.
+
+
+## Scatterplot of COVID-19 Death Proportion by US states
+
+```{r scatter, message=F, echo=F, warning=FALSE}
+dat4 <- death_by_sex_age[`Start Date` == "01/01/2020" & `End Date` == "11/19/2022" & State != "United States" & Sex == "All Sexes" & `Age Group` == "All Ages"]
+dat4 <- dat4[, "COVID-19 Death Proportion" := `COVID-19 Deaths`/`Total Deaths`]
+dat4 %>%
+  plot_ly(y = ~`Total Deaths`, x = ~ `COVID-19 Deaths`,
+         type = 'scatter',
+         mode = 'markers',
+         color = ~`State`,
+         size = ~`COVID-19 Death Proportion`,
+         sizes = c(5, 70),
+         marker = list(sizemode = 'diameter', opacity = 0.5),
+         hoverinfo = 'text',
+         text = ~paste( paste(State, ":", sep=""), 
+              paste(" Total deaths: ", `Total Deaths`, sep="") ,
+              paste(" COVID-19 Deaths: ", `COVID-19 Deaths`, sep=""),
+              paste(" COVID-19 Death Proportion: ", round(`COVID-19 Death Proportion`, digits = 4),sep=""), 
+              sep = "<br>")) %>% 
+layout(title = "COVID-19 Death Proportion for US states",
+        yaxis = list(title = "Total deaths"), 
+         xaxis = list(title = "COVID-19 deaths"),
+         hovermode = "compare")
+```
+
+The size of bubbles represent the COVID-19 Death Proportion for different states. For example, New York City has the highest COVID-19 Death Proportion. It maybe depend on the high population density. So people in New York will be easier to be infected with COVID-19. We'd better stratify our data by states. So we can assume people in certain states can have a same risk to be infected with COVID and have a same vaccination status.
+
+And sample size of death data also vary from states. California has the most sample size, so California will have the much power to affect our result.
+
+# Choropleth Map of COVID-19 Death Proportion by US states
+
+```{r map, message=F, echo=F, warning=FALSE}
+dat4_map <- dat4 %>% select(State, `COVID-19 Death Proportion`) # select data
+# Get state abbreviations and map to state names
+library(dplyr)
+st_crosswalk <- tibble(State = state.name) %>%
+   bind_cols(tibble(abb = state.abb)) %>% 
+   bind_rows(tibble(State = "District of Columbia", abb = "DC"))
+dat4_map2 <- left_join(dat4_map, st_crosswalk, by = "State")
+dat4_map2$state.name <- dat4_map2$state
+dat4_map2$state <- dat4_map2$abb
+dat4_map2$abb <- NULL
+
+dat4_map2$hover <- with(dat4_map, paste(state.name, '<br>', "COVID-19 Death Proportion:", round(`COVID-19 Death Proportion`, digits = 4)))
+# Set up mapping details
+set_map_details <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  showlakes = TRUE,
+  lakecolor = toRGB('white')
+)
+# Create the map
+fig <- plot_geo(dat4_map2, locationmode = 'USA-states') %>% 
+  add_trace(
+    z = ~`COVID-19 Death Proportion`, 
+    text = ~hover, 
+    locations = ~state,
+    color = ~`COVID-19 Death Proportion`, 
+    colors = 'Blues'
+  )
+fig <- fig %>% colorbar(title = "COVID-19 Death Proportion")
+fig <- fig %>% layout(
+    title = paste('COVID-19 Death Proportion by State', '<br>'),
+    geo = set_map_details
+  )
+fig
+```
+
+In this choropleth map, dark blue means the state has a relative high COVID-19 death proportion. We can see the COVID-19 death proportion have significant differences in states. 
+
+##  Spaghetti plots of COVID-19  Proportion Deaths versus Age Groups
+
+```{r spaghetti, message=F, echo=F, warning=FALSE}
+g1 = dat1[Sex == "Male"] %>%
+  plot_ly(y = ~`COVID-19 deaths proportion`, x = ~ `Age Group`,
+         type = 'scatter',
+         mode = 'line',
+         color = ~`State`,
+         hoverinfo = 'text',
+         text = ~paste( paste(State, ":", sep=""), 
+              paste(" Age Group: ", `Age Group`, sep="") ,
+              paste(" COVID-19 Deaths Proportion: ", round(`COVID-19 deaths proportion`, digits = 4), sep=""),
+              sep = "<br>")) %>% 
+layout(title = "Proportion of COVID-19 Deaths for Male",
+        yaxis = list(title = "COVID-19 Death Proportion"), 
+         xaxis = list(title = "age group"),
+         hovermode = "compare")
+
+g2 = dat1[Sex == "Female"] %>%
+  plot_ly(y = ~`COVID-19 deaths proportion`, x = ~ `Age Group`,
+         type = 'scatter',
+         mode = 'line',
+         color = ~`State`,
+         hoverinfo = 'text',
+         text = ~paste( paste(State, ":", sep=""), 
+              paste(" Age Group: ", `Age Group`, sep="") ,
+              paste(" COVID-19 Deaths Proportion: ", round(`COVID-19 deaths proportion`, digits = 4), sep=""),
+              sep = "<br>")) %>% 
+layout(title = "Proportion of COVID-19 Deaths for Female",
+        yaxis = list(title = "COVID-19 Death Proportion"), 
+         xaxis = list(title = "age group"),
+         hovermode = "compare")
+
+```
+
+## {.tabset}
+
+### For Male
+
+```{r echo=FALSE}
+g1
+```
+
+### For Female
+
+```{r echo=FALSE}
+g2
+```
+
+## {-}
+
+From those two spaghetti plots, we find the increase rate of COVID-19 deaths proportion for male is fast from 15 years old to 54 years old. When age beyond 55 years, the increase rate of COVID-19 deaths proportion get slow. For female, there is no obvious break point of the increase rate of COVID-19 deaths proportion. At about 55 years old, the change of COVID-19 deaths proportion converted from increase to decrease. 
+
+# Conclusion
+
+**There is a association between patients' age groups and the proportion of COVID-19 deaths. With the increase of patients' age, the proportion of COVID-19 deaths get higher. However, this relationship was sex-specific. The increase rate of COVID-19 deaths proportion for male is fast from 15 years old to 54 years old. When age beyond 55, the increase rate of COVID-19 deaths proportion get slow. For female, there is no obvious break point of the increase rate. Around 55 years old, the change of COVID-19 deaths proportion converted from increase to decrease.**
+
+
+
