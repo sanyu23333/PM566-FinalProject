@@ -200,7 +200,7 @@ The size of bubbles represent the COVID-19 Death Proportion for different states
 
 And sample size of death data also vary from states. California has the most sample size, so California will have the much power to affect our result.
 
-# Choropleth Map of COVID-19 Death Proportion by US states
+## Choropleth Map of COVID-19 Death Proportion by US states
 
 ```{r map, message=F, echo=F, warning=FALSE}
 dat4_map <- dat4 %>% select(State, `COVID-19 Death Proportion`) # select data
