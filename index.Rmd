@@ -299,7 +299,7 @@ From those two spaghetti plots, we find the increase rate of COVID-19 deaths pro
 **There is a association between patients' age groups and the proportion of COVID-19 deaths. With the increase of patients' age, the proportion of COVID-19 deaths get higher. However, this relationship was sex-specific. The increase rate of COVID-19 deaths proportion for male is fast from 15 years old to 54 years old. When age beyond 55, the increase rate of COVID-19 deaths proportion get slow. For female, there is no obvious break point of the increase rate. Around 55 years old, the change of COVID-19 deaths proportion converted from increase to decrease.**
 
 # Download Full Report
-[Click Here](https://github.com/sanyu23333/PM566-FinalProject/final_report.pdf)
+[Click Here](https://github.com/sanyu23333/PM566-FinalProject/blob/main/final_report.pdf)
 
 
 

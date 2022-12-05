@@ -32,12 +32,13 @@ For this study, we are interested in **What is the association between age group
 2. Does the association between age groups and COVID-19 deaths proportion of total deaths vary from US states?
 
 To read the full study, 
+
 [Website](https://sanyu23333.github.io/PM566-FinalProject/)
 
-[PDF Report](https://github.com/sanyu23333/PM566-FinalProject/final_report.pdf)
+[PDF Report](https://github.com/sanyu23333/PM566-FinalProject/blob/main/final_report.pdf)
 
-[Code](https://github.com/sanyu23333/PM566-FinalProject/index.Rmd)
+[Code](https://github.com/sanyu23333/PM566-FinalProject/blob/main/index.Rmd)
 
-[Data](https://github.com/sanyu23333/PM566-FinalProject/death_by_sex_age.csv)
+[Data](https://github.com/sanyu23333/PM566-FinalProject/blob/main/death_by_sex_age.csv)
 
 
