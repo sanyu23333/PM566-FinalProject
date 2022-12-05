@@ -1,0 +1,13 @@
+DT
+ggplot2
+plotly
+dplyr
+data.table
+tidyverse
+tibble
+tidyr
+readr
+purrr
+stringr
+forcats
+knitr
