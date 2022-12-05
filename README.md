@@ -33,8 +33,11 @@ For this study, we are interested in **What is the association between age group
 
 To read the full study, 
 [Website](https://sanyu23333.github.io/PM566-FinalProject/)
+
 [PDF Report](https://github.com/sanyu23333/PM566-FinalProject/final_report.pdf)
+
 [Code](https://github.com/sanyu23333/PM566-FinalProject/index.Rmd)
+
 [Data](https://github.com/sanyu23333/PM566-FinalProject/death_by_sex_age.csv)
 
 
